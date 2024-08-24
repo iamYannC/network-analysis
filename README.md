@@ -13,7 +13,7 @@ This folder contains the required R files as well as xlsx to run the network ana
 There is still debugging to be done, but the code is functional, and will probably not change much.
 
 # Structure
-  - [Input files](input files/)
+  - ![Input files]('input files/')
   - [R files](R files/)
   - [Output files](output files/)
 
