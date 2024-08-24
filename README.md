@@ -1,6 +1,6 @@
 # Network analysis from research data
 Yann Cohen
-Invalid Date
+2024-08-24
 
 - [Introduction](#introduction)
 - [Structure](#structure)
