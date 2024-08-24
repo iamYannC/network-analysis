@@ -1,4 +1,4 @@
-# a simpler version
+# a simpler version --older and working to plot GRAPHS
 library(tidyverse)
 library(ggnet)
 library(GGally)
@@ -7,12 +7,17 @@ library(ggtext)
 library(network)
 library(glue)
 
+all <- as.data.frame(xl$all)
+
+rownames(all) <- all[,1]
+all <- all[,-1]
+
 
 # read the csv
-greens <- read.csv("C:/Users/97253/Desktop/class/private/yossi/green.csv",row.names = 1)
+# greens <- read.csv("C:/Users/97253/Desktop/class/private/yossi/green.csv",row.names = 1)
 
 # Transform into a matrix
-mat_greens <- greens
+mat_greens <- all
 mat_greens[is.na(mat_greens)] <- 0
 mat_greens <- as.matrix(mat_greens)
 
@@ -31,21 +36,21 @@ clusters <- case_when(
 my_net %v% "cluster" = clusters
 
 shape_palette <-15:20
-names(shape_palette) <- unique(clusters)
+names(shape_palette) <- unique(clusters)[complete.cases(unique(clusters))]
 
-            #### Positioning mode:
+#### Positioning mode:
 mode_ <- "fruchtermanreingold"     # modes:  "kamadakawai" "fruchtermanreingold" "circle" "target", "hall" "spring" and more from sna package
 niters_ <- 4000
 
-            #### Vertices / Nodes:
+#### Vertices / Nodes:
 # function to get top N valuable nodes
 top_n_nodes <- function(n,network_=my_net){
-
+  
   if(n==0) return(NULL)
-
+  
   if(n > degree(network_)[degree(network_)>0] |> length()){
     n <-  degree(network_)[degree(network_)>0] |> length() }
-
+  
   top_x <- which(degree(network_) %in%  sort(degree(network_),decreasing = TRUE)[1:n])
   return(map_vec(top_x,\(x) network_$val[x][[1]][[2]])  )
 }
@@ -53,18 +58,18 @@ top_n_nodes <- function(n,network_=my_net){
 node_col <- "grey10"
 # Limit the size of the nodes (range)
 node_size_range <- seq(12,3,-3)
-    # Pick nodes to label on the graph
-node_labels <- top_n_nodes(2)
+# Pick nodes to label on the graph
+node_labels <- top_n_nodes(5)
 node_label_size <- 3
 node_label_col <- "white"
 
 
-        #### Edges:
+#### Edges:
 edge_scale <- .5
 edge_size <- as.vector(as.matrix(mat_greens))[mat_greens>0]*edge_scale
 edge_col <- "lightblue"
 
-    # Pick the size of the legend's keys
+# Pick the size of the legend's keys
 lgnd_key_size <- 8
 lgnd_position_coords <- c(0.2,0.85)
 lgnd_title <- "Cluster"
@@ -72,8 +77,8 @@ lgnd_title <- "Cluster"
 
 
 set.seed(2)
-  ggnet2(my_net, shape = "cluster",size = "degree",
-         node.color=node_col,edge.color = edge_col,label.color =node_label_col,
+ggnet2(my_net, shape = "cluster",size = "degree",
+       node.color=node_col,edge.color = edge_col,label.color =node_label_col,
        mode = mode_,size.min = 1,
        shape.legend = lgnd_title,
        shape.palette = shape_palette,
@@ -81,18 +86,17 @@ set.seed(2)
        label.size = node_label_size,
        edge.size = edge_size#,
        # layout.par = list(niter = niters_,
-                         # cell.pointpointrad = 10)
-       )+
+       # cell.pointpointrad = 10)
+)+
   scale_size_discrete("",range = c(min(node_size_range),max(node_size_range)),
                       breaks = node_size_range)+
-   guides(size = "none",
+  guides(size = "none",
          shape = guide_legend(title.position = "top",
                               title.hjust = 0.5,
                               direction = "vertical",
                               override.aes = list(size = lgnd_key_size)
-                              )
-         )+theme(legend.position = lgnd_position_coords)
+         )
+  )+theme(legend.position = lgnd_position_coords)
 
 # get max
-  my_net$val[which.max(degree(my_net))]
-
+my_net$val[which.max(degree(my_net))]
