@@ -13,9 +13,9 @@ This folder contains the required R files as well as xlsx to run the network ana
 There is still debugging to be done, but the code is functional, and will probably not change much.
 
 # Structure
-  - [Input files](#xlsx)
-  - [R files](#R)
-  - [Output files](#output)
+  - [Input files](input files/)
+  - [R files](R files/)
+  - [Output files](output files/)
 
 
 # Plotting the network
