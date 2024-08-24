@@ -54,3 +54,5 @@ workflow
 R files/test-file.R
 # no need for qmd version on the web
 README.qmd
+README.html
+README_files/
