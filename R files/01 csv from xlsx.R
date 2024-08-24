@@ -1,4 +1,5 @@
 library(tidyverse)
+library(glue)
 # load xlsx ---------------------------------------------------------------
 xl <- purrr::map(2:5,\(tab) readxl::read_xlsx('input files/matrixcorrect.xlsx', sheet = tab,skip = 1))
 xl <- xl |> purrr::set_names(c('all','pinks','greens','hetero'))
