@@ -50,3 +50,5 @@ rsconnect/
 
 # workflow --just for me
 workflow
+# test file also just for me
+R files/test-file.R
