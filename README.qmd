@@ -1,14 +1,10 @@
 ---
-title: "README"
+title: "Network analysis from research data"
+author: "Yann Cohen"
+date: "24th of August, 2024"
 format: gfm
 toc: true
 ---
-
-# Network analysis from research data
-
-# TODO:
-
-add toc move to qmd work on net statistics add structure
 
 # Introduction
 
@@ -42,3 +38,5 @@ Here is an example of the network with all students:
 ![](output files/net_all.png)
 
 # Statistics
+
+Work in Progress

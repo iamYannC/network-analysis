@@ -1,19 +1,11 @@
-# README
+# Network analysis from research data
+Yann Cohen
+Invalid Date
 
-
-- [Network analysis from research
-  data](#network-analysis-from-research-data)
-- [TODO:](#todo)
 - [Introduction](#introduction)
 - [Structure](#structure)
 - [Plotting the network](#plotting-the-network)
 - [Statistics](#statistics)
-
-# Network analysis from research data
-
-# TODO:
-
-add toc move to qmd work on net statistics add structure
 
 # Introduction
 
@@ -48,3 +40,5 @@ Here is an example of the network with all students:
 ![](output%20files/net_all.png)
 
 # Statistics
+
+Work in Progress
