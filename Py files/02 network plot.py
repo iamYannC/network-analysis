@@ -1,12 +1,11 @@
       # Highly experimental code #
-# Documentatiol for networkx: https://networkx.org/documentation/stable/index.html
-
+# Documentation for networkx: https://networkx.org/documentation/stable/index.html
+# Start from 01 network init.py
 
 # Set Graph attributes
 
-
-
 node_coef = 30
+
 node_sizes = [G.degree(node) * node_coef for node in G.nodes()]
 
 # Define edge with by weight
@@ -35,10 +34,10 @@ pos_kamkaw = nx.kamada_kawai_layout(G)
 pos_circlular = nx.circular_layout(G)
 
 
-plt.title('Basic draw function for Pink Network')
+plt.title('Basic draw function for Network')
 nx.draw(G, with_labels=True,
            node_size=node_sizes,
-           pos=pos_circlular,
+           pos=pos_spring,
            node_color=vcolor,node_shape='h',
            edge_color=ecolor,
            width=edge_weights,
@@ -49,24 +48,26 @@ plt.close()
 
 
 
-plt.title('Spring draw function for Pink Network')
-nx.draw_spring(G, with_labels=True,node_size=node_sizes,
-           node_color=vcolor,
-           edge_color=ecolor,
-           width=edge_weights,
-           style = '-',
-           labels  = labels)  # use ?draw_networkx to see all options
+plt.title('Spring draw function for Network')
+nx.draw_spring(G, with_labels=True,
+                  node_size=node_sizes,
+                  node_color=vcolor,
+                  edge_color=ecolor,
+                  width=edge_weights,
+                  style = '-',
+                  labels  = labels)  # use ?draw_networkx to see all options
 plt.show()
 plt.close()
 
 
-plt.title('Kamada Kawai draw function for Pink Network')
-nx.draw_kamada_kawai(G, with_labels=True,node_size=node_sizes,
-           node_color=vcolor,
-           edge_color=ecolor,
-           width=edge_weights,
-           style = '-',
-           labels  = labels)  # use ?draw_networkx to see all options
+plt.title('Kamada Kawai draw function for Network')
+nx.draw_kamada_kawai(G, with_labels=True,
+                        node_size=node_sizes,
+                        node_color=vcolor,
+                        edge_color=ecolor,
+                        width=edge_weights,
+                        style = '-',
+                        labels  = labels)  # use ?draw_networkx to see all options
 plt.show()
 plt.close()
 
@@ -77,7 +78,7 @@ plt.close()
 pos = nx.random_layout(G) # this is a deterministic layout
 
 # Draw the graph
-plt.title('Basic draw function for Pink Network')
+plt.title('Basic draw function for Network')
 nx.draw(G, pos,
         with_labels=False,
         node_size=node_sizes,
@@ -108,7 +109,3 @@ def add_label(network, position,label_sizecoef, min_degree):
 
 add_label(G,pos,label_sizecoef = 1.1,min_degree=min_degree)  
 plt.close()
-
-
-
-####
