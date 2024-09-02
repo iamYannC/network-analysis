@@ -1,3 +1,13 @@
+---
+title: "Statistical terms"
+output:
+    html_document:
+        toc: true
+        toc_float: true
+        number_sections: true
+        theme: united
+
+---
 This file contains explenations on the centrality measures that I used in the project.
 Please visit the links of each topic for more information. It is focused on Social Networks, rather than just networks in general,
 but all the information is relevant to the project.
