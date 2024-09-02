@@ -1,7 +1,13 @@
+
 This file contains explenations on the centrality measures that I used in the project.
-Please visit the links of each topic for more information. It is focused on Social Networks, rather than just networks in general,
+Please visit the links of each topic for more information.
+It is focused on Social Networks, rather than just networks in general,
 but all the information is relevant to the project.
+
 ====================================================================================================
+
+# [Graph Theory](https://www.sciencedirect.com/topics/computer-science/graph-theory)
+Graph Theory is defined as a branch of mathematics that utilizes graphs to represent theoretical or structural relations, providing a useful tool for forming, viewing, and analyzing various kinds of structural models in different fields such as anthropology.
 
 # [Social Network Analysis](https://www.sciencedirect.com/topics/social-sciences/social-network-analysis)
 Social Network Analysis refers to the study conducted with an awareness of social networks, including connections with other analysts in the field. It involves examining relationships between individuals or groups to understand patterns and dynamics within social structures.
@@ -38,4 +44,5 @@ to the sum of the scores of its neighbours (Bonacich, 2007).
 Bonacich, P. (2007). Some unique properties of eigenvector centrality. Social networks, 29(4), 555-564.
 
 ====================================================================================================
+
 Please visit [Mathematics](https://www.sciencedirect.com/topics/mathematics/) or [Computer Sceince](https://www.sciencedirect.com/topics/computer-science/) sections in [SceienceDirect](https://www.sciencedirect.com/topics/) for more information on the topics.

@@ -1,4 +1,3 @@
-# adj_matrix = pd.read_csv(r"C:/Users/97253/Documents/R/network-analysis/input files/pinks.csv")
 
       # Highly experimental code #
 # Documentation for networkx: https://networkx.org/documentation/stable/index.html
@@ -21,8 +20,11 @@ for i in shortest_path.items():
 
 # Edge Centrality
 edge_centrality = nx.edge_betweenness_centrality(G)
-# edge centrality is the number of shortest paths that go through an edge
-# it is the sum of the fraction of shortest paths that go through an edge
+'''
+edge centrality is the number of shortest paths that go through an edge.
+It is the sum of the fraction of shortest paths that go through an edge
+'''
+
 # edge df
 edges_df = pd.DataFrame(G.edges(data=True), columns=['node1', 'node2', 'weight'])
 edges_df['weight'] = edges_df['weight'].apply(lambda x: x['weight'])
