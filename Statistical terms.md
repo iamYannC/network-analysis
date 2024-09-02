@@ -18,7 +18,6 @@ Network density refers to the quantitative measure of the number of edges betwee
 ## Diameter: 𝑚𝑎𝑥(𝜌(𝑖,𝑗)∀𝑖,𝑗)
 Diameter is the longest of all the calculated path lengths or the distance [34]. A larger diameter signifies that information propagation will have higher latency.
 
-
 # [Centrality Measures](https://www.sciencedirect.com/topics/computer-science/centrality-measure)
 entrality measures refer to the evaluation of how central an individual is positioned within a social network, using tools like graph theory and network analysis. Various measures such as degree centrality, closeness centrality, betweenness centrality, eigenvector centrality, and Katz centrality are commonly used to analyze social influence within networks.
 
@@ -37,3 +36,6 @@ that are themselves important and it is calculated by giving each node a relativ
 to the sum of the scores of its neighbours (Bonacich, 2007).
 
 Bonacich, P. (2007). Some unique properties of eigenvector centrality. Social networks, 29(4), 555-564.
+
+====================================================================================================
+Please visit [Mathematics](https://www.sciencedirect.com/topics/mathematics/) or [Computer Sceince](https://www.sciencedirect.com/topics/computer-science/) sections in [SceienceDirect](https://www.sciencedirect.com/topics/) for more information on the topics.
