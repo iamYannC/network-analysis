@@ -5,7 +5,8 @@
 
 # check if length of connected components equals number of nodes, meaning the graph is connected 
 len_connected = len(list(nx.connected_components(G))[0])
-len_connected == nx.number_of_nodes(G) # it is.
+n_nodes = nx.number_of_nodes(G)
+len_connected == n_nodes # it is.
 
 # Let's analyse shortest paths...
 shortest_path = {}
@@ -17,15 +18,14 @@ for tar in G.nodes:
 for i in shortest_path.items():
     print(i)
 
-
 # Edge Centrality
-edge_centrality = nx.edge_betweenness_centrality(G)
-'''
-edge centrality is the number of shortest paths that go through an edge.
-It is the sum of the fraction of shortest paths that go through an edge
-'''
 
-# edge df
+  # Total number of paires = n(n-1)/2
+  n = nx.number_of_nodes(G)
+  total_pairs = n * (n-1) / 2
+edge_centrality = nx.edge_betweenness_centrality(G)
+
+# Edges df
 edges_df = pd.DataFrame(G.edges(data=True), columns=['node1', 'node2', 'weight'])
 edges_df['weight'] = edges_df['weight'].apply(lambda x: x['weight'])
 
@@ -35,29 +35,57 @@ edges_df['edge_centrality'] = edges_df.apply(lambda x: edge_centrality[(x['node1
 edges_df.sort_values(by = 'edge_centrality',ascending = False).head()
 
 
+# Community detection - Girvan-Newman Algorithm (experimental -- and honestly not very meaningful) 
+n_iter = 5
+g_iter = G.copy()
+for i in range(n_iter):
+  delete_this = sorted(nx.edge_betweenness_centrality(g_iter).items(), key = lambda p: -p[1])[0][0] # sort by the second element of each pair, which is the actual betweenness value. negative for descending order. then retreive the name of the edge (node1 and node2)
+  g_iter.remove_edge(*delete_this) # (a tuple). * unpacks the tuple
+  plt.title(f'Iteration {i+1}, deleted edge: {delete_this}')
+  nx.draw_shell(g_iter, with_labels=True)
+  plt.show()
+  plt.close()
+   
+
+
 # Node Centrality -- manual calculations
 
-# Manualy set degrees
-my_degree = {}
-for i in adj_matrix.index:
-    # sum of rows
-    r = adj_matrix.loc[i].sum()
-    # sum of columns
-    c = adj_matrix[i].sum()
-    d = c + r
-    # put in a dict where key is the node and value is the degree
-    if d > 0:
-      my_degree[i] = d
+def weighted_degree_centrality(G):
+    """
+    Calculate the weighted degree centrality for each node. consider the weight of the edges.
+    
+    Parameters:
+    G (networkx.Graph): A weighted, undirected graph.
+    
+    Returns:
+    dict: A dictionary with nodes as keys and their weighted degree centrality as values.
+    """
+    # Calculate the total weight of all edges in the graph
+    total_weight = sum(weight for _, _, weight in G.edges(data='weight'))
+    
+    # Calculate the weighted degree (also: strength) for each node
+    weighted_degrees = {node: sum(weight for _, _, weight in G.edges(node, data='weight'))
+                        for node in G.nodes()}
+    
+    # Divide the weighted degrees by the total weight
+    w_centralities = {node: degree / total_weight for node, degree in weighted_degrees.items()}
+    
+    return w_centralities
 
-# degree centrality is the number of neighbors divided by the number of possible neighbors (degree / n-1)
-degree_centrality = {k: v/(len(G.nodes)-1) for k,v in my_degree.items()}
 
-closeness_centrality = nx.closeness_centrality(G)
-ei = nx.eigenvector_centrality(G)
-betweenness_centrality = nx.betweenness_centrality(G)
+    # Calculate weighted degree centrality
+    degree_centrality = weighted_degree_centrality(G)
+    sorted(degree_centrality.items(), key=lambda x: -x[1])
+   
+    sum(degree_centrality.values()) # sanity: should be 2, as in undirected graphs the sum of degrees is twice the number of edges
 
+sorted(degree_centrality.items(), key = lambda x: -x[1])
+closeness_centrality = nx.closeness_centrality(G, distance=None) # Unweighted since weights represent the capacity of the edge, not distance
+ei_centrality = nx.eigenvector_centrality(G, weight = 'weight')
+betweenness_centrality = nx.betweenness_centrality(G, weight = 'weight', k = n_nodes)
+load_centrality = nx.load_centrality(G, weight = None) # Unweighted since wieghts represent the capacity of the edge, not distance
   # Let's store everything in a nice df [DONT round!!]
-node_data = pd.DataFrame([degree_centrality,closeness_centrality,ei,betweenness_centrality]).T
+node_data = pd.DataFrame([degree_centrality,closeness_centrality,ei_centrality,betweenness_centrality]).T
 node_data = node_data.join(pd.Series(my_degree,name='degree'))
 node_data.columns = ['degree_centrality','closeness_centrality','eigenvector_centrality','betweenness_centrality','degree']
 # relocating...
