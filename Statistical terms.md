@@ -42,6 +42,10 @@ to the sum of the scores of its neighbours (Bonacich, 2007).
 
 Bonacich, P. (2007). Some unique properties of eigenvector centrality. Social networks, 29(4), 555-564.
 
+## [Load Centrality](https://networkx.org/documentation/stable/reference/algorithms/generated/networkx.algorithms.centrality.load_centrality.html#networkx.algorithms.centrality.load_centrality)
+The load centrality of a node is the fraction of all shortest paths that pass through that node.
+This metric is not currently used in the analysis, as it is similar to betweenness centrality.
+
 
 
 Please visit [Mathematics](https://www.sciencedirect.com/topics/mathematics/) or [Computer Sceince](https://www.sciencedirect.com/topics/computer-science/) sections in [SceienceDirect](https://www.sciencedirect.com/topics/) for more information on the topics.
