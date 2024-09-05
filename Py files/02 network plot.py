@@ -6,7 +6,7 @@
 
 node_coef = 30
 
-node_sizes = [G.degree(node) * node_coef for node in G.nodes()]
+node_sizes = [G.degree(node, weight = 'weight') * node_coef for node in G.nodes()]
 
 # Define edge with by weight
 edge_coef = 1.3
@@ -20,7 +20,7 @@ ecolor='grey'
 min_degree = 5
 labels = {node: node for node in G.nodes()}
 for node in G.nodes():
-    if G.degree(node) < min_degree:
+    if G.degree(node, weight = 'weight') < min_degree:
         del labels[node]
 
 
@@ -87,12 +87,10 @@ nx.draw(G, pos,
         width=edge_weights,
         style = '-',
         labels  = labels)  # use ?draw_networkx to see all options
- 
-
 
 def add_label(network, position,label_sizecoef, min_degree):
-  
   labels = {node: node for node in network.nodes()}
+  degrees = dict(G.degree(weight = 'weight'))
   label_sizes = {node: 10 + degrees[node] * label_sizecoef for node in network.nodes()}
   # if degrees < minimum degree, remove the label
   for node in network.nodes():
@@ -109,3 +107,4 @@ def add_label(network, position,label_sizecoef, min_degree):
 
 add_label(G,pos,label_sizecoef = 1.1,min_degree=min_degree)  
 plt.close()
+

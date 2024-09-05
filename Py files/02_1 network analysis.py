@@ -3,52 +3,55 @@
 # Documentation for networkx: https://networkx.org/documentation/stable/index.html
 # Start from 01 network init.py
 
-# check if length of connected components equals number of nodes, meaning the graph is connected 
-len_connected = len(list(nx.connected_components(G))[0])
-n_nodes = nx.number_of_nodes(G)
-len_connected == n_nodes # it is.
+# Network Metrics
+net_name = 'pinks'
 
-# Let's analyse shortest paths...
+net_df = pd.DataFrame({'network':net_name,
+              'net_n_nodes':nx.number_of_nodes(G),
+              'net_n_edges': nx.number_of_edges(G),
+              'net_is_connected':nx.is_connected(G),
+              'net_distance':nx.average_shortest_path_length(G),
+              'net_diameter':nx.diameter(G),
+              'net_density':nx.density(G),
+              'net_sum_weights':sum([G[u][v]['weight'] for u,v in G.edges()])
+              },
+              index = [net_name])
+
+# Edges Centrality
+
+# Edges df
+edges_df = pd.DataFrame(G.edges(data=False), columns = ['node1','node2'])
+edges_df['edge_weight'] = nx.get_edge_attributes(G,'weight').values()
+edges_df['edge_betweenness'] = nx.get_edge_attributes(G,'betweenness').values()
+edges_df['network'] = net_df.index[0]
+edges_df = edges_df[['network','node1','node2','edge_weight','edge_betweenness']]
+edges_df.sort_values(by = 'edge_betweenness',ascending = False).head()
+
+# Add full paths data
 shortest_path = {}
 for tar in G.nodes:
     for src in G.nodes:
       if nx.has_path(G,src,tar) and src != tar:
         shortest_path[(tar,src)] = nx.shortest_path(G,tar,src)
 
-for i in shortest_path.items():
-    print(i)
+shortest_path_df = pd.DataFrame(shortest_path.items(), columns = ['pair','shortest_path'])
+shortest_path_df['distance'] = shortest_path_df['shortest_path'].apply(lambda x: len(x)-1)
+# Split pair inshortest_path_dfto node1 and node2, drop pair, and join to edges_df
+shortest_path_df[['node1','node2']] = pd.DataFrame(shortest_path_df['pair'].tolist(), index=shortest_path_df.index)
+shortest_path_df.drop(columns = 'pair', inplace = True)
+shortest_path_df = shortest_path_df[['node1','node2','shortest_path','distance']]
+# Drop duplicates
+shortest_path_df = shortest_path_df[shortest_path_df['node1'] < shortest_path_df['node2']]
 
-# Edge Centrality
+edges_df = shortest_path_df.merge(edges_df, on = ['node1','node2'], how = 'left')
+edges_df['network'].fillna(net_name, inplace = True)
+# filter out NaN
+edges_df[~edges_df['edge_weight'].isna()]
+edges_df = edges_df[['network','node1','node2','shortest_path','distance','edge_weight','edge_betweenness']]
 
-  # Total number of paires = n(n-1)/2
-  n = nx.number_of_nodes(G)
-  total_pairs = n * (n-1) / 2
-edge_centrality = nx.edge_betweenness_centrality(G)
+# Nodes Centrality
 
-# Edges df
-edges_df = pd.DataFrame(G.edges(data=True), columns=['node1', 'node2', 'weight'])
-edges_df['weight'] = edges_df['weight'].apply(lambda x: x['weight'])
-
-# add edge centrality to the df
-edges_df['edge_centrality'] = edges_df.apply(lambda x: edge_centrality[(x['node1'],x['node2'])],axis=1)
-
-edges_df.sort_values(by = 'edge_centrality',ascending = False).head()
-
-
-# Community detection - Girvan-Newman Algorithm (experimental -- and honestly not very meaningful) 
-n_iter = 5
-g_iter = G.copy()
-for i in range(n_iter):
-  delete_this = sorted(nx.edge_betweenness_centrality(g_iter).items(), key = lambda p: -p[1])[0][0] # sort by the second element of each pair, which is the actual betweenness value. negative for descending order. then retreive the name of the edge (node1 and node2)
-  g_iter.remove_edge(*delete_this) # (a tuple). * unpacks the tuple
-  plt.title(f'Iteration {i+1}, deleted edge: {delete_this}')
-  nx.draw_shell(g_iter, with_labels=True)
-  plt.show()
-  plt.close()
-   
-
-
-# Node Centrality -- manual calculations
+# Degree Centrality -- weighted
 
 def weighted_degree_centrality(G):
     """
@@ -72,28 +75,27 @@ def weighted_degree_centrality(G):
     
     return w_centralities
 
+w_degree_centrality = weighted_degree_centrality(G)
+sorted(w_degree_centrality.items(), key=lambda x: -x[1])
+nx.set_node_attributes(G, w_degree_centrality, 'degree_centrality')
+sum(nx.get_node_attributes(G,'degree_centrality').values())
+  # sanity: should be 2, as in undirected graphs the sum of degrees is twice the number of edges
 
-    # Calculate weighted degree centrality
-    degree_centrality = weighted_degree_centrality(G)
-    sorted(degree_centrality.items(), key=lambda x: -x[1])
-   
-    sum(degree_centrality.values()) # sanity: should be 2, as in undirected graphs the sum of degrees is twice the number of edges
 
-sorted(degree_centrality.items(), key = lambda x: -x[1])
-closeness_centrality = nx.closeness_centrality(G, distance=None) # Unweighted since weights represent the capacity of the edge, not distance
-ei_centrality = nx.eigenvector_centrality(G, weight = 'weight')
-betweenness_centrality = nx.betweenness_centrality(G, weight = 'weight', k = n_nodes)
 load_centrality = nx.load_centrality(G, weight = None) # Unweighted since wieghts represent the capacity of the edge, not distance
   # Let's store everything in a nice df [DONT round!!]
-node_data = pd.DataFrame([degree_centrality,closeness_centrality,ei_centrality,betweenness_centrality]).T
-node_data = node_data.join(pd.Series(my_degree,name='degree'))
-node_data.columns = ['degree_centrality','closeness_centrality','eigenvector_centrality','betweenness_centrality','degree']
-# relocating...
-node_data = node_data[['degree','degree_centrality','closeness_centrality','eigenvector_centrality','betweenness_centrality']]
 
 
-# correlation between deg cen and deg should be 1, as they are a linear transformation of each other
-node_data[['degree_centrality','degree']].corr()
-node_data.applymap(lambda x: round(x,2)).sort_values(by='degree_centrality',ascending=False)
 
-# To be continued..
+# Nodes df
+nodes_df = pd.DataFrame({
+        'network': [net_name] * len(G.nodes()),
+        'node': list(G.nodes()),
+        'node_group': [G.nodes[node].get('group', '') for node in G.nodes()],
+        'node_strength': [G.degree(node, weight='weight') for node in G.nodes()],
+        'node_degree_centrality': [G.nodes[node].get('degree_centrality', 0) for node in G.nodes()],
+        'node_betweenness': [G.nodes[node].get('betweenness', 0) for node in G.nodes()],
+        'node_eigen': [G.nodes[node].get('eigen', 0) for node in G.nodes()],
+        'node_closeness': [G.nodes[node].get('closeness', 0) for node in G.nodes()]
+    })
+
