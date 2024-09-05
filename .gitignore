@@ -59,3 +59,4 @@ README_files/
 
 # ignore the cache
 Py files/__pycache__ 
+Py files/.venv/
