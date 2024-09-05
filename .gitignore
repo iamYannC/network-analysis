@@ -56,3 +56,6 @@ R files/test-file.R
 README.qmd
 README.html
 README_files/
+
+# ignore the cache
+Py files/__pycache__ 
