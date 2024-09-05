@@ -1,7 +1,12 @@
+
 This file contains explenations on the centrality measures that I used in the project.
-Please visit the links of each topic for more information. It is focused on Social Networks, rather than just networks in general,
+Please visit the links of each topic for more information.
+It is focused on Social Networks, rather than just networks in general,
 but all the information is relevant to the project.
-====================================================================================================
+
+
+# [Graph Theory](https://www.sciencedirect.com/topics/computer-science/graph-theory)
+Graph Theory is defined as a branch of mathematics that utilizes graphs to represent theoretical or structural relations, providing a useful tool for forming, viewing, and analyzing various kinds of structural models in different fields such as anthropology.
 
 # [Social Network Analysis](https://www.sciencedirect.com/topics/social-sciences/social-network-analysis)
 Social Network Analysis refers to the study conducted with an awareness of social networks, including connections with other analysts in the field. It involves examining relationships between individuals or groups to understand patterns and dynamics within social structures.
@@ -22,20 +27,33 @@ Diameter is the longest of all the calculated path lengths or the distance [34].
 entrality measures refer to the evaluation of how central an individual is positioned within a social network, using tools like graph theory and network analysis. Various measures such as degree centrality, closeness centrality, betweenness centrality, eigenvector centrality, and Katz centrality are commonly used to analyze social influence within networks.
 
 ## [Degree Centrality](https://www.sciencedirect.com/topics/computer-science/degree-centrality)
+$DC(v_i) = \frac{1}{N-1} \sum_{j=1}^{N} a_{i,j}$
+
+
 Degree centrality refers to a measure in network analysis that quantifies the number of connections a node has. It is calculated based on the count of social connections (edges) a node possesses, with higher values indicating a more central position within the network.
 
 ## [Closeness Centrality](https://www.sciencedirect.com/topics/computer-science/closeness-centrality)
+
+$ C(u) = \frac{1}{\sum_y d(u, v)} $
+
 Closeness centrality refers to the measure of the average shortest distance between each person in a network. It indicates how quickly information can flow through the network, with lower scores indicating a more central and important position in the network.
 
 ## [Betweenness Centrality](https://www.sciencedirect.com/topics/computer-science/betweenness-centrality)
+$Betw(n) = \sum_{\substack{i \neq n \\ j \neq n \\ i, j \in N}} \frac{a_{i,j}(n)}{a_{i,j}}$
+
 Betweenness centrality is defined as a measure of how often a node lies on the shortest path between all pairs of nodes in a network. It requires global knowledge of the entire network and assigns centrality values to nodes based on their position in these paths.
 
 ## [Eigenvector Centrality](https://www.sciencedirect.com/topics/mathematics/eigenvector)
+$x_i = \frac{1}{\lambda} \sum_{k=1}^{N} a_{k,i} x_k$
+
+Where $\lambda ≠ 0$ is a constant. In the matrix form, it is presented
+$\lambda x = xA$
+
+
 Eigenvector centrality premises that a node’s importance in a network may increase by having connections to the other nodes
 that are themselves important and it is calculated by giving each node a relative score proportional
 to the sum of the scores of its neighbours (Bonacich, 2007).
 
 Bonacich, P. (2007). Some unique properties of eigenvector centrality. Social networks, 29(4), 555-564.
 
-====================================================================================================
-Please visit [Mathematics](https://www.sciencedirect.com/topics/mathematics/) or [Computer Sceince](https://www.sciencedirect.com/topics/computer-science/) sections in [SceienceDirect](https://www.sciencedirect.com/topics/) for more information on the topics.
+Please visit [Mathematics](https://www.sciencedirect.com/topics/mathematics/) or [Computer Sceince](https://www.sciencedirect.com/topics/computer-science/) sections in [SceienceDirect](https://www.sciencedirect.com/topics/) for more information on these topics.

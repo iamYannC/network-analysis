@@ -12,14 +12,15 @@ adj_matrix = pd.read_csv(r"input files\pinks.csv") # start by testing on pinks
 print(adj_matrix)
 
 # basic cleaning
-adj_matrix['pinks'] = adj_matrix['pinks'].str.extract('(\d+)').astype(int) # throws A WARNING but works
-adj_matrix.set_index('pinks', inplace=True)
+net_name = adj_matrix.columns[0]
+adj_matrix[net_name] = adj_matrix[net_name].str.extract('(\d+)').astype(int) # throws A WARNING but works
+adj_matrix.set_index(net_name, inplace=True)
 adj_matrix.index.name = None
 
 adj_matrix.fillna(0,inplace = True)
 adj_matrix = adj_matrix.astype(int)
-adj_matrix.columns = adj_matrix.columns.str.removeprefix('pinks_')
-adj_matrix.index = adj_matrix.index.str.removeprefix('pinks_')
+adj_matrix.columns = adj_matrix.columns.str.removeprefix(net_name + '_')
+adj_matrix.index = adj_matrix.index.str.removeprefix(net_name + '_')
 adj_matrix.index = adj_matrix.index.astype(int)
 # make sure its symetric 
 adj_matrix.shape # 48 * 48
@@ -41,49 +42,33 @@ adj_matrix.columns = adj_matrix.columns.astype(int)
 G = nx.from_pandas_adjacency(adj_matrix, create_using=nx.Graph) # nx.Graph is the default
 
 nx.number_of_nodes(G) # 48 nodes
-nx.number_of_isolates(G) # 33 isolates
-
+nx.number_of_isolates(G) # 33 pinks, 28 greens, 32 hetero
 # Remove from the graph all nodes that have no edges
 G.remove_nodes_from(list(nx.isolates(G)))
-nx.number_of_nodes(G) # should be 48 - 33 = 15 -- yes!
-
-
-
-
+nx.number_of_nodes(G) # 15 pinks, 20 greens, 16 hetero
 
 # For network graphs look at 02 network plot.py
 # For network analysis look at 02_1 network analysis.py
 
 # ==================================================================================================== #
 
-## experimental views on graph -- wip
-# One way to look at two-way connections
-for n, nbrsdict  in G.adjacency():
-  for nbr, eattr in nbrsdict.items():
-    print(n, nbr, eattr)
+# Nodes
 
-# a bit better
-for u, v, w in G.edges.data('weight'):
-    print(u, v, w)
+# Each node has a group attribute -- edit to meaningful group names!!!
+group_labels = {1:'group1',2:'group2',3:'group3',4:'group4',5:'group5'}
+group_dict = {node: group_labels[int(str(node)[0])] for node in G.nodes()}
 
-# set degree as a node attribute
-for node in G.nodes():
-    weighted_degree = G.degree(node, weight='weight')
-    G.nodes[node]['weighted_degree'] = weighted_degree
+nx.set_node_attributes(G, group_dict, 'group')
+nx.set_node_attributes(G,nx.betweenness_centrality(G, weight = 'weight',
+                                                    k = nx.number_of_nodes(G)),
+                                                    'betweenness')
+nx.set_node_attributes(G,G.degree(weight='weight'),'strength')
+nx.set_node_attributes(G,nx.eigenvector_centrality(G, weight='weight'),'eigen')
+nx.set_node_attributes(G,nx.closeness_centrality(G, distance=None),'closeness') # Unweighted since weights represent the capacity of the edge, not distance
 
-def custom_degree(G):
-    return {node: data['weighted_degree'] for node, data in G.nodes(data=True)}
-custom_degree(G)
+# Edges
 
-
-G.degree() # degree of the nodes, non-weighted
-G.degree(weight='weight') # actual degree of the nodes
-
-# compare the two in a pandas dataframe
-nodes_names = [node for node in G.nodes()]
-non_weighted = [G.degree(node) for node in G.nodes()]
-weighted = [G.degree(node, weight='weight') for node in G.nodes()]
-df = pd.DataFrame({'node':nodes_names,'non_weighted':non_weighted,'weighted':weighted})
-# get difference
-df['diff'] = df['weighted'] - df['non_weighted']
-df.sort_values(by='diff',ascending=False)
+# set edges weight as attributes..
+for src, tar, w in G.edges.data('weight'):
+    w = G[src][tar]['weight'] # in G (graph) take the edge between src and tar and set the weight attribute to w 
+nx.set_edge_attributes(G,nx.edge_betweenness_centrality(G),'betweenness')
