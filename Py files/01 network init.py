@@ -12,14 +12,15 @@ adj_matrix = pd.read_csv(r"input files\pinks.csv") # start by testing on pinks
 print(adj_matrix)
 
 # basic cleaning
-adj_matrix['pinks'] = adj_matrix['pinks'].str.extract('(\d+)').astype(int) # throws A WARNING but works
-adj_matrix.set_index('pinks', inplace=True)
+net_name = adj_matrix.columns[0]
+adj_matrix[net_name] = adj_matrix[net_name].str.extract('(\d+)').astype(int) # throws A WARNING but works
+adj_matrix.set_index(net_name, inplace=True)
 adj_matrix.index.name = None
 
 adj_matrix.fillna(0,inplace = True)
 adj_matrix = adj_matrix.astype(int)
-adj_matrix.columns = adj_matrix.columns.str.removeprefix('pinks_')
-adj_matrix.index = adj_matrix.index.str.removeprefix('pinks_')
+adj_matrix.columns = adj_matrix.columns.str.removeprefix(net_name + '_')
+adj_matrix.index = adj_matrix.index.str.removeprefix(net_name + '_')
 adj_matrix.index = adj_matrix.index.astype(int)
 # make sure its symetric 
 adj_matrix.shape # 48 * 48
@@ -41,10 +42,10 @@ adj_matrix.columns = adj_matrix.columns.astype(int)
 G = nx.from_pandas_adjacency(adj_matrix, create_using=nx.Graph) # nx.Graph is the default
 
 nx.number_of_nodes(G) # 48 nodes
-nx.number_of_isolates(G) # 33 isolates
+nx.number_of_isolates(G) # 33 pinks, 28 greens, 32 hetero
 # Remove from the graph all nodes that have no edges
 G.remove_nodes_from(list(nx.isolates(G)))
-nx.number_of_nodes(G) # should be 48 - 33 = 15 -- yes!
+nx.number_of_nodes(G) # 15 pinks, 20 greens, 16 hetero
 
 # For network graphs look at 02 network plot.py
 # For network analysis look at 02_1 network analysis.py

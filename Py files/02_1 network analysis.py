@@ -4,7 +4,6 @@
 # Start from 01 network init.py
 
 # Network Metrics
-net_name = 'pinks'
 
 net_df = pd.DataFrame({'network':net_name,
               'net_n_nodes':nx.number_of_nodes(G),
@@ -45,9 +44,14 @@ shortest_path_df = shortest_path_df[shortest_path_df['node1'] < shortest_path_df
 
 edges_df = shortest_path_df.merge(edges_df, on = ['node1','node2'], how = 'left')
 edges_df['network'].fillna(net_name, inplace = True)
-# filter out NaN
+
+# filter out NaN to see that it corresponds back to the original edges_df
 edges_df[~edges_df['edge_weight'].isna()]
 edges_df = edges_df[['network','node1','node2','shortest_path','distance','edge_weight','edge_betweenness']]
+
+edges_df.sort_values(by = 'distance',ascending = False).head()
+edges_df.sort_values(by = 'edge_betweenness',ascending = False).head()
+
 
 # Nodes Centrality
 
@@ -81,11 +85,8 @@ nx.set_node_attributes(G, w_degree_centrality, 'degree_centrality')
 sum(nx.get_node_attributes(G,'degree_centrality').values())
   # sanity: should be 2, as in undirected graphs the sum of degrees is twice the number of edges
 
-
-load_centrality = nx.load_centrality(G, weight = None) # Unweighted since wieghts represent the capacity of the edge, not distance
-  # Let's store everything in a nice df [DONT round!!]
-
-
+# load_centrality = nx.load_centrality(G, weight = None) # Unweighted since wieghts represent the capacity of the edge, not distance
+#   # Let's store everything in a nice df [DONT round!!]
 
 # Nodes df
 nodes_df = pd.DataFrame({
@@ -99,3 +100,4 @@ nodes_df = pd.DataFrame({
         'node_closeness': [G.nodes[node].get('closeness', 0) for node in G.nodes()]
     })
 
+nodes_df.sort_values(by = 'node_strength',ascending = False).head()
