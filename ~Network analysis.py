@@ -1,14 +1,30 @@
+# TABLE OF CONTENTES #
+
+# 0. Libraries & Data setup
+# 1. Create graphs (G)
+# 2. Set attributes
+    # 2.1 Nodes
+    # 2.2 Edges
+# 3. Metrics
+    # 3.1 Network Metrics
+    # 3.2 Edges Centrality
+    # 3.3 Nodes Centrality
+# 4. Write CSVs
+
+# 0. Libraries & Data setup ================================================
 import pandas as pd 
 import networkx as nx
 
 sheets_names = {1:'all',2:'pinks',3:'greens',4:'hetero'}
 
-xl = pd.read_excel(r"C:\Users\97253\Documents\R\network-analysis\input files\matrixcorrect.xlsx",sheet_name=list(sheets_names.keys()),index_col=0,skiprows=1)
+xl = pd.read_excel(r"input files\matrixcorrect.xlsx",sheet_name=list(sheets_names.keys()),index_col=0,skiprows=1)
 # fillna with 0 for all xl sheets and rename
 xl = {sheet:xl[sheet].fillna(0) for sheet in xl.keys()}
 xl = {sheets_names[sheet]:xl[sheet] for sheet in xl.keys()}
 
-# Create the graphs (G) for each network
+
+# 1. Create graphs (G) ======================================================
+
 G = {net: nx.from_pandas_adjacency(xl[net], create_using=nx.Graph) for net in sheets_names.values()}
 
 # Remove all nodes with no edges
@@ -18,8 +34,9 @@ G = {net: nx.from_pandas_adjacency(xl[net], create_using=nx.Graph) for net in sh
 # Check the number of nodes after removing isolates
 {net: nx.number_of_nodes(G[net]) for net in G.keys()}
 
-# ADD ATTRIBUTES
-# Nodes
+# 2. Set attributes ==========================================================
+
+# 2.1 Nodes
 
 # Each node has a group attribute -- edit to meaningful group names!!!
 group_labels = {1:'group1',2:'group2',3:'group3',4:'group4',5:'group5'}
@@ -33,8 +50,7 @@ G['greens'].nodes(data=True) # check the nodes attributes
 {net: nx.set_node_attributes(G[net], nx.eigenvector_centrality(G[net], weight='weight'), 'eigen') for net in G.keys()}
 {net: nx.set_node_attributes(G[net], nx.closeness_centrality(G[net], distance=None), 'closeness') for net in G.keys()} # Unweighted since weights represent the capacity of the edge, not distance
 
-
-# Edges
+# 2.2 Edges
 
 # set edges weight as attributes..
 for net in G.keys():
@@ -45,8 +61,9 @@ for net in G.keys():
 # check
 {net: nx.get_edge_attributes(G[net],'betweenness') for net in G.keys()}
 
-# Part 2, Put it all in a data frame
-# Network Metrics
+# 3. Metrics ================================================================================
+    
+    # 3.1 Network Metrics
 
 n_nodes = [nx.number_of_nodes(G[net_name]) for net_name in G.keys()]
 n_edges = [nx.number_of_edges(G[net_name]) for net_name in G.keys()]
@@ -66,7 +83,17 @@ net_df = pd.DataFrame({'network':list(G.keys()),
                 'net_sum_weights':sum_weights
                 })
 
-# Edges Centrality
+net_df['net_name'] = net_df['network'].apply(lambda x: 'All items' if x == 'all' else 
+                                             'Commitment to students and to some school' if x == 'pinks' else 
+                                             'Some teaching and educational management' if x == 'greens' else 
+                                             'Others')
+net_df['net_N_size'] = net_df['network'].apply(lambda x: 35 if x == 'all' else
+                                               10 if x == 'pinks' else
+                                               9 if x == 'greens' else
+                                               11)
+net_df = net_df[['network','net_name','net_N_size','net_n_nodes','net_n_edges','net_is_connected','net_distance','net_diameter','net_density','net_sum_weights']]
+
+    # 3.2 Edges Centrality
 
 edges_df = pd.DataFrame(columns = ['network','node1','node2','edge_weight','edge_betweenness'])
 for net_name in G.keys():
@@ -90,23 +117,30 @@ for net_name in G.keys():
 
 # add network name to shortest_path
 shortest_path = {key:val for key,val in shortest_path.items()}
-
-
 shortest_path_df = pd.DataFrame(shortest_path.items(), columns = ['pair','shortest_path'])
 shortest_path_df['distance'] = shortest_path_df['shortest_path'].apply(lambda x: len(x)-1)
-# Split pair in shortest_path_df to node1 and node2, drop pair, and join to edges_df
+
+# Split pair in shortest_path_df to node1 and node2 before merging to edges_df
 shortest_path_df[['node1','node2']] = pd.DataFrame(shortest_path_df['pair'].tolist(), index=shortest_path_df.index)
 shortest_path_df.drop(columns = 'pair', inplace = True)
-shortest_path_df = shortest_path_df[['node1','node2','shortest_path','distance']]
 # Drop duplicates
 shortest_path_df = shortest_path_df[shortest_path_df['node1'] < shortest_path_df['node2']]
-# apply
+# Merge to edges_df, fill na values with network name.
 edges_df = shortest_path_df.merge(edges_df, on = ['node1','node2'], how = 'left')
 edges_df['network'].fillna(net_name, inplace = True)
 
-# Nodes Centrality
+# Find out which edges appear in which networks. Only one edge appear in all networks!
 
-# Let's define a function to calculate the weighted degree centrality
+edges_df['path_in_N_networks'] = edges_df['shortest_path'].apply(lambda shortest: ''.join(str(shortest)))
+edges_df['path_in_N_networks'] = edges_df['path_in_N_networks'].map(edges_df['path_in_N_networks'].value_counts())
+edges_df = edges_df[['network','node1','node2','shortest_path','distance','path_in_N_networks','edge_weight','edge_betweenness']]
+
+# sort values according to path_in_N_networks and node1, reset index
+edges_df = edges_df.sort_values(by = ['path_in_N_networks','node1'],ascending = False).reset_index(drop = True)
+
+    # 3.3 Nodes Centrality
+
+# A function to calculate the weighted degree centrality
 def weighted_degree_centrality(G):
     """
     Calculate the weighted degree centrality for each node. consider the weight of the edges.
@@ -140,7 +174,6 @@ w_degree_centrality = {net: weighted_degree_centrality(G[net]) for net in G.keys
 [sum(nx.get_node_attributes(G[net],'degree_centrality').values()) for net in G.keys()]
  
 
-
 # Nodes df
 nodes_df = pd.DataFrame(columns = ['network','node','node_group','node_strength','node_degree_centrality','node_betweenness','node_eigen','node_closeness'])
 for net in G.keys():
@@ -156,6 +189,12 @@ for net in G.keys():
     })
     nodes_df = pd.concat([nodes_df,nodes_df_net])
 
+# Look at the top node (metric: degree centrality [weighted]) in each network
 nodes_df.sort_values(by = 'node_degree_centrality',ascending = False).groupby('network').head(1)
 
 
+# 4. Write CSVs ================================================================================
+
+nodes_df.to_csv(r"output files\Nodes_df.csv",index=False)
+edges_df.to_csv(r"output files\Edges_df.csv",index=False)
+net_df.to_csv(r"output files\Network_df.csv",index=False)
