@@ -5,7 +5,8 @@ library(GGally)
 library(sna)
 library(ggtext)
 library(network)
-
+xl <- purrr::map(2:5,\(tab) readxl::read_xlsx('input files/matrixcorrect.xlsx', sheet = tab,skip = 1))
+xl <- xl |> purrr::set_names(c('all','pinks','greens','hetero'))
 map(1:length(xl),\(i) {
   
   # Initial load & transformation 
@@ -21,12 +22,12 @@ map(1:length(xl),\(i) {
   
   # Set informative names to each cluster (1xx, 2xx etc...)
   clusters <- case_when(
-    as.numeric(str_extract(network.vertex.names(my_net),"\\d")) == 1 ~ "Informative name 1",
-    as.numeric(str_extract(network.vertex.names(my_net),"\\d")) == 2 ~ "Another informative 2",
-    as.numeric(str_extract(network.vertex.names(my_net),"\\d")) == 3 ~ "Very informative 3",
-    as.numeric(str_extract(network.vertex.names(my_net),"\\d")) == 4 ~ "Not so informative 4",
-    as.numeric(str_extract(network.vertex.names(my_net),"\\d")) == 5 ~ "Cluster begins with 5",
-    as.numeric(str_extract(network.vertex.names(my_net),"\\d")) == 6 ~ "Done 6",
+    as.numeric(str_extract(network::network.vertex.names(my_net),"\\d")) == 1 ~ "group1",
+    as.numeric(str_extract(network::network.vertex.names(my_net),"\\d")) == 2 ~ "group2",
+    as.numeric(str_extract(network::network.vertex.names(my_net),"\\d")) == 3 ~ "group3",
+    as.numeric(str_extract(network::network.vertex.names(my_net),"\\d")) == 4 ~ "group4",
+    as.numeric(str_extract(network::network.vertex.names(my_net),"\\d")) == 5 ~ "group5",
+    as.numeric(str_extract(network::network.vertex.names(my_net),"\\d")) == 6 ~ "group6",
   )
   my_net %v% "cluster" = clusters
   
@@ -101,5 +102,3 @@ map(1:length(xl),\(i) {
   ggsave(glue('output files/net_{names(xl)[i]}.png'),width = 14,height = 10,dpi = 300)
   
 })
-# get max
-# my_net$val[which.max(sna::degree(my_net))]
