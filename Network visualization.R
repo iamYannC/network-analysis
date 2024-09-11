@@ -220,3 +220,9 @@ for(i in 1:length(matrices)){
 
 map(1:4,\(x) print(matrices[[x]]$plot))
 walk(1:4,\(x) ggsave(glue::glue("output files/net_{names(xl)[x]}2.png"), matrices[[x]]$plot, width = 12, height = 9,dpi = 300))
+
+
+# Upload data from Python -------------------------------------------------
+net_df_py <- read_csv("output files/Network_df.csv")
+edge_df_py <- read_csv("output files/Edges_df.csv")
+node_df_py <- read_csv("output files/Nodes_df.csv")
