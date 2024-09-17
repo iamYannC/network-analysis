@@ -40,6 +40,8 @@ for (i in 1:length(xl)){
     inet <- inet |> 
       igraph::delete_vertices(which(igraph::degree(inet)==0))
     
+    # igraph::delete_edges(inet,which(igraph::edge_attr(inet,'weight')==0))
+    
   # Matrix looks like that:
     # igraph::as_adj(inet,type = 'upper',sparse = F,attr='weight')
     
@@ -47,17 +49,17 @@ for (i in 1:length(xl)){
 # Load Py Data ------------------------------------------------------------
 
   py_net.net <-  py_net  |> filter(network==names(xl)[i])
-  py_edge.net <- py_edge |> filter(network==names(xl)[i])
+  py_edge.net <- py_edge |> filter(network==names(xl)[i]) |> drop_na(edge_weight)
   py_node.net <- py_node |> filter(network==names(xl)[i])
   
   
   py_node.net$shapes <- case_match(py_node.net$node_group,
-                             'group1' ~ 21,
-                             'group2' ~ 23,
-                             'group3' ~ 24,
-                             'group4' ~ 22,
-                             'group5' ~ 25
-                             ) |> as.factor()
+                             'group1' ~ 'meaningful name for group1',
+                             'group2' ~ 'meaningful name for group2',
+                             'group3' ~ 'meaningful name for group3',
+                             'group4' ~ 'meaningful name for group4',
+                             'group5' ~ 'meaningful name for group5',
+                             ) 
 
     # Custom star layout for pink network
   if(names(xl)[i] == 'pinks'){
@@ -97,7 +99,7 @@ for (i in 1:length(xl)){
                                     alpha = ifelse(edge_weight > 1, 0.8, 0.4)
     ),
     curvature = 0,lineend = 'round') +
-    geom_point(data = py_node.net,aes(x = x,y = y,size = node_strength, shape = shapes),fill="grey50") +
+    geom_point(data = py_node.net,aes(x = x,y = y,size = node_strength, shape = shapes),fill="grey10") +
     
     geom_label(data = py_node.net, aes(x = x,y = y, size = node_strength*.35,
                                    label = ifelse(node_strength >= 5, node, NA),
@@ -113,7 +115,9 @@ for (i in 1:length(xl)){
     )+
     scale_size_identity() +
     scale_linewidth_continuous(range = c(.5,3)) +
-    scale_y_continuous(expand = expansion(add=.2,mult=0))+
+    scale_shape_manual(values = c(24,22,21,23,25)) +
+    scale_y_continuous(expand = expansion(add=1,mult=0))+
+    scale_x_continuous(expand = expansion(add=1,mult=0))+
     guides(linewidth="none", size="none", alpha = "none",
            shape = guide_legend(title.position = "top",
                                 direction = "vertical",
@@ -132,11 +136,11 @@ for (i in 1:length(xl)){
 nets[[i]] <- list(
   plot = gg,
   network = inet,
-  py_net = py_net,
+  py_net = py_net.net,
   py_edge = py_edge.net,
   py_node = py_node.net
 )  
-rm(list=ls(pattern = "*\\.net"))
+# rm(list=ls(pattern = "*\\.net"))
 }
 
 # save as rds
@@ -145,7 +149,8 @@ write_rds(nets, "output files/networks_full.rds")
 walk(
   1:length(nets),
   \(i) {
-    ggsave(glue::glue("output files/{nets[[i]]$py_net$network}_network.svg"), nets[[i]]$plot, width = 12, height = 12, units = "in", dpi = 300)
+    ggsave(glue::glue("output files/{nets[[i]]$py_net$network}_svg.svg"),
+           nets[[i]]$plot, width = 12, height = 10, units = "in", dpi = 300)
   }
 )
 
