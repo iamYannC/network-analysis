@@ -23,4 +23,4 @@ main <- function(my_name){
     )
 }
 
-map(names(xl)[2],main)
+map(names(xl),main)
