@@ -102,24 +102,64 @@ custom_layout <- function(network_name,network_obj, layout_function = igraph::la
   #' @param seed an integer, the seed for the random number generator.
   #' 
   #' @returns a matrix of coordinates.
-  #' @note For some layouts, more arguments can be passed. Also, the output might be a list, if so please use `$layout` to access the matrix.
+  #' @note For some layouts, more arguments can be passed. Also, the output might be a list, if so please use `$layout` to access the matrix. Since I designed a custom layout for each network, the seed and layout_function parameters are somewhat useless.
   
   if(network_name == "pinks"){
     
     lay <-  igraph::layout_as_star(network_obj,center = 2,
-                           order = c(1,12,4,
-                                     13,7,14,
-                                     15,3,8,
-                                     6,9,10,
-                                     11,2,5
-                           ))
-  } else { # with time, create a specific layout for each network
-    
-    set.seed(seed)
-    lay <- layout_function(network_obj)
+                                   order = c(1,12,4,
+                                             13,7,14,
+                                             15,3,8,
+                                             6,9,10,
+                                             11,2,5
+                                   ))
+  } else{
+    if(network_name == "greens"){
+      
+      lay <- igraph::layout_with_sugiyama(network_obj)$layout
+      lay[,2] <- lay[,2] *.5
+      lay[12,] <- c(4,1.5)
+      lay[13,] <- c(5,1.5)
+      
+      # legend postion = c(0.7,.08), horizontal
+      
+      # lay <- igraph::layout_with_kk(network_obj)
+      # l10 <- lay[10,]
+      # lay[10,] <- lay[11,] # 213
+      # lay[11, ] <- l10 # 310
+      # lay[12,] <- lay[12,] + c(2,4) # 311
+      # lay[13, ] <- lay[13,] + c(2,4) # 312
+      # lay[17,] <- lay[17,2] - 0.2 # 318
+      
+      
+      
+      
+    } else{
+      if(network_name == 'hetero'){
+        lay <- igraph::layout_with_sugiyama(network_obj)$layout
+        lay[,2] <- lay[,2] *.5
+        
+        # lgnd_dir = 'vertical', lgnd_pos = c(0.14,0.85))
+        
+      } else{ # all
+        set.seed(seed)  
+        lay <- igraph::layout_as_star(network_obj, center = 21,
+                                      order = c(1,29,28,27,
+                                                30,26,25,24,
+                                                3,21,23,22,20,
+                                                18,19,2,17,
+                                                14,16,13,12,15,
+                                                11,10,9,8,
+                                                5,7,6,4
+                                      )
+              # lgnd_dir = 'horizontal', lgnd_pos = c(0.54,1), w = 2, s = 6
+        )
+      }
+    }
   }
+  
   return(lay)
-  }
+}
 
 modify_py <- function(python_df_list_filtered,layout){
   
@@ -150,7 +190,9 @@ modify_py <- function(python_df_list_filtered,layout){
 
 ggnetwork <- function(python_df_list_modified,network_name,
                       w = 1, s = 5,
-                      lgnd_pos  = c(.6,.95), lgnd_dir = 'vertical'
+                      lgnd_pos  = c(.6,.95), lgnd_dir = 'vertical',
+                      label_size_coef = .35, node_size_coef = 1.5,
+                      xpnd_x = c(0.2, 0), xpnd_y = c(0.1, 0)
                       ){
   
   #' This function creates a network plot.
@@ -161,6 +203,10 @@ ggnetwork <- function(python_df_list_modified,network_name,
   #' @param s a numeric, the node strength threshold.
   #' @param lgnd_pos a numeric vector, the position of the legend.
   #' @param lgnd_dir a string, the direction of the legend. either 'vertical' or 'horizontal'.
+  #' @param label_size_coef a numeric, the label size coefficient.
+  #' @param node_size_coef a numeric, the node size coefficient.
+  #' @param xpnd_x a numeric vector of length 2, the expansion of the x-axis, where the first element is addition and the second is multiplication.
+  #' @param xpnd_y a numeric vector of length 2, the expansion of the y-axis, where the first element is addition and the second is multiplication.
   #' 
   #' @returns a ggplot object.
   #' @note The plot can be further customized.
@@ -175,10 +221,10 @@ ggnetwork <- function(python_df_list_modified,network_name,
                curvature = 0, lineend = 'round') +
     
     geom_point(data = python_df_list_modified[['v']],
-               aes(x = x,y = y,size = node_strength,
+               aes(x = x,y = y,size = node_strength * node_size_coef,
                    shape = node_labels), fill="grey10") +
     geom_label(data = python_df_list_modified[['v']],
-               aes(x = x,y = y, size = node_strength*.35,
+               aes(x = x,y = y, size = node_strength * label_size_coef,
                    label = ifelse(node_strength >= s, node, NA),
                ),
                label.r = unit(0.4, "lines"),
@@ -198,8 +244,8 @@ ggnetwork <- function(python_df_list_modified,network_name,
     scale_size_identity() +
     scale_linewidth_continuous(range = c(.5,3)) +
     scale_shape_manual(values = c(24,22,21,23,25)) +
-    scale_y_continuous(expand = expansion(add=0.2,mult=0))+
-    scale_x_continuous(expand = expansion(add=0.1,mult=0))+
+    scale_x_continuous(expand = expansion(add=xpnd_x[1],mult=xpnd_x[2]))+
+    scale_y_continuous(expand = expansion(add=xpnd_y[1],mult=xpnd_y[2]))+
     
     guides(linewidth="none", size="none", alpha = "none",
            shape = guide_legend(title.position = "top",
@@ -211,7 +257,7 @@ ggnetwork <- function(python_df_list_modified,network_name,
     theme(
       legend.position = lgnd_pos,
       plot.title = element_text(family = 'Calibri'),
-      plot.background = element_blank(),
+      plot.background = element_rect(fill = 'white'),
       panel.background = element_blank(),
       panel.grid = element_blank(), # turn on/off for setting coordinates
       axis.text = element_blank()  # turn on/off for setting coordinates
