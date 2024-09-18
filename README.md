@@ -1,6 +1,6 @@
 # Network analysis from research data
 Yann Cohen
-2024-09-11
+2024-09-18
 
 - [Introduction](#introduction)
 - [Repository Contents](#repository-contents)
@@ -34,7 +34,7 @@ processed and analyzed by *Yann Cohen*[^3].
   - [Mixed group](input%20files/hetero.csv)
 - Analysis and Vizualization
   - [Analysis in Python](Network%20analysis.py)
-  - [Vizualization in R](Network%20visualization.R)
+  - [Vizualization in R](main%20generator.R)
 - [Output files](output%20files/)
   - [All students](output%20files/net_all.png) [*(2nd
     version)*](output%20files/net_all2.png)
@@ -47,17 +47,17 @@ processed and analyzed by *Yann Cohen*[^3].
   - [Network data](output%20files/Network_df.csv)
   - [Edges data](output%20files/Edges_df.csv)
   - [Nodes data](output%20files/Nodes_df.csv)
+  - [Networks full](networks_full.rds)
 - [Statistical terms](statistical%20terms.md) (*Also shown below*)
 
 # Network Plots
 
-Two example network plots, one of all students and the other of a
-subset. Two different visualizations techniques are shown for each
-network.
+The output folder currently contains various iterations of plotting.
+Once finalized, Only one version for each network (4 in total) will
+remain.
 
-![](output%20files/net_all.png)
-
-Or a network of the ‘pink’ group: ![](output%20files/net_pinks2.png)
+Here is an example of the ‘pink’ group network:
+![](output%20files/pinks_svg.svg)
 
 # Statistics[^4]
 
@@ -163,7 +163,7 @@ Social networks, 29(4), 555-564.
     [ResearchGate](https://www.researchgate.net/profile/Ronit-Rozenszajn)
 
 [^3]: **Yann Cohen:**
-    [Linkedin](https://at.linkedin.com/in/yann-cohen-tourman-0515301b8)
+    [Linkedin](https://www.linkedin.com/in/yann-cohen-tourman/)
 
 [^4]: Visit
     [Mathematics](https://www.sciencedirect.com/topics/mathematics/) or
