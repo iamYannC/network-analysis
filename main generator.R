@@ -52,3 +52,16 @@ main <- function(my_name){
 }
 
 map(names(xl),main)
+
+
+### can use as long df in the future:
+# V(inet)$eigen_py <- df_py$v |> filter(network==my_name) |> pull(node_eigen)
+# V(inet)$eigen_r <- eigen_centrality(inet,weights = E(inet)$weight)$vector
+# E(inet)$dist <- df_py$e |> filter(network==my_name) |> pull(distance)
+# view(as_long_data_frame(inet))
+# 
+# cor(
+#   eigen_centrality(inet,weights = E(inet)$weight)$vector,
+#   df_py$v |> filter(network==my_name) |> pull(node_eigen)
+# )
+###
