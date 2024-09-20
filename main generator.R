@@ -20,18 +20,17 @@ main <- function(my_name){
   viz_opt <- 
     tibble(
       network = names(xl),
-      lgnd_dir = c('horizontal', 'vertical', 'horizontal', 'horizontal'),
-      lgnd_pos = list( c(0.54,1), c(.6,.95), c(0.7,.08),c(0.14,0.85) ) |> set_names(names(xl)),
-      s = c(6,rep(1,3)),
+      lgnd_dir = c('horizontal', 'vertical', 'horizontal', 'vertical'),
+      lgnd_pos = list( c(0.54, 1), c(0.1, 0.90), c(0.7, 0.08),c(0.14, 0.85) ) |> set_names(names(xl)),
+      s = c(6,4,4,2),
       w = c(2,rep(5,3)),
       label_size_coef = rep(0.35,4),
       node_size_coef = rep(1.1,4),
       xpnd_x = list(c(0.2, 0), c(0.2, 0), c(0.2, 0), c(0.2, 0)) |> set_names(names(xl)),
       xpnd_y = list(c(0.2, 0), c(0.1, 0), c(0.1, 0), c(0.1, 0)) |> set_names(names(xl))
     )
+
   ##
-  
-  
   print(
     ggnetwork(py_df_mod,my_net,
               w = viz_opt$w[viz_opt$network==my_name],
@@ -51,8 +50,5 @@ main <- function(my_name){
   ggsave(glue::glue("output files/{my_name}_svg.svg"),
          width = 12, height = 10, units = "in", dpi = 300)
 }
-
-
-
 
 map(names(xl),main)
