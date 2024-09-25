@@ -1,6 +1,6 @@
 # Network analysis from research data
 Yann Cohen
-2024-09-18
+2024-09-25
 
 - [Introduction](#introduction)
 - [Repository Contents](#repository-contents)
@@ -22,7 +22,9 @@ Yann Cohen
 
 This folder contains the analysis and visualization of a research
 conducted by *Yossy Machluf*[^1] *Ronit Rozenszajn*[^2]. The data was
-processed and analyzed by *Yann Cohen*[^3].
+processed and analyzed by *Yann Cohen*[^3] using
+[*networkx*](https://proceedings.scipy.org/articles/TCWV9851)[^4] in
+Python and [*igraph*](https://igraph.org)[^5] in R.
 
 # Repository Contents
 
@@ -59,7 +61,7 @@ remain.
 Here is an example of the ‘pink’ group network:
 ![](output%20files/pinks_svg.svg)
 
-# Statistics[^4]
+# Statistics[^6]
 
 ## [Graph Theory](https://www.sciencedirect.com/topics/computer-science/graph-theory)
 
@@ -83,7 +85,7 @@ assigned to the edges connecting them.
 
 ## [Distance Graph](https://www.sciencedirect.com/topics/computer-science/distance-graph)
 
-A ‘Distance Graph’ is defined as a graph-based similarity measure where
+A Distance Graph is defined as a graph-based similarity measure where
 the distance between two query nodes is computed as the length of the
 shortest path between them. Smaller graph distances indicate a higher
 level of relatedness between the queries.
@@ -134,9 +136,7 @@ more central and important position in the network.
 $Betw(n) = \sum_{\substack{i \neq n \\ j \neq n \\ i, j \in N}} \frac{a_{i,j}(n)}{a_{i,j}}$
 
 Betweenness centrality is defined as a measure of how often a node lies
-on the shortest path between all pairs of nodes in a network. It
-requires global knowledge of the entire network and assigns centrality
-values to nodes based on their position in these paths.
+on the shortest path between all pairs of nodes in a network.
 
 ### [Eigenvector Centrality](https://www.sciencedirect.com/topics/mathematics/eigenvector)
 
@@ -165,7 +165,15 @@ Social networks, 29(4), 555-564.
 [^3]: **Yann Cohen:**
     [Linkedin](https://www.linkedin.com/in/yann-cohen-tourman/)
 
-[^4]: Visit
+[^4]: Hagberg, A. A., Schult, D. A., & Swart, P. J. (2008). Exploring
+    network structure, dynamics, and function using NetworkX. In G.
+    Varoquaux, T. Vaught, & J. Millman (Eds.), Proceedings of the 7th
+    Python in Science Conference (SciPy2008) (pp. 11–15). Pasadena, CA.
+
+[^5]: Csardi G, Nepusz T (2006). “The igraph software package for
+    complex network research.” *InterJournal*, *Complex Systems*, 1695.
+
+[^6]: Visit
     [Mathematics](https://www.sciencedirect.com/topics/mathematics/) or
     [Computer
     Sceince](https://www.sciencedirect.com/topics/computer-science/)
