@@ -3,8 +3,8 @@
 # 0. Libraries & Data setup
 # 1. Create graphs (G)
 # 2. Set attributes
-    # 2.1 Nodes
-    # 2.2 Edges
+    # 2.1 Edges
+    # 2.2 Nodes
 # 3. Metrics
     # 3.1 Network Metrics
     # 3.2 Edges Centrality
@@ -34,23 +34,9 @@ G = {net: nx.from_pandas_adjacency(xl[net], create_using=nx.Graph) for net in sh
 # Check the number of nodes after removing isolates
 {net: nx.number_of_nodes(G[net]) for net in G.keys()}
 
+
 # 2. Set attributes ==========================================================
-
-# 2.1 Nodes
-
-# Each node has a group attribute -- edit to meaningful group names!!!
-group_labels = {1:'group1',2:'group2',3:'group3',4:'group4',5:'group5'}
-
-{net: nx.set_node_attributes(G[net], {node: group_labels[int(str(node)[0])] for node in G[net].nodes()}, 'group') for net in G.keys()}
-
-G['greens'].nodes(data=True) # check the nodes attributes
-
-{net: nx.set_node_attributes(G[net], nx.betweenness_centrality(G[net], weight = 'weight', k = nx.number_of_nodes(G[net])), 'betweenness') for net in G.keys()}
-{net: nx.set_node_attributes(G[net], G[net].degree(weight='weight'), 'strength') for net in G.keys()}
-{net: nx.set_node_attributes(G[net], nx.eigenvector_centrality(G[net], weight='weight'), 'eigen') for net in G.keys()}
-{net: nx.set_node_attributes(G[net], nx.closeness_centrality(G[net], distance=None), 'closeness') for net in G.keys()} # Unweighted since weights represent the capacity of the edge, not distance
-
-# 2.2 Edges
+# 2.1 Edges
 
 # set edges weight as attributes..
 for net in G.keys():
@@ -60,6 +46,28 @@ for net in G.keys():
 {net: nx.set_edge_attributes(G[net], nx.edge_betweenness_centrality(G[net]), 'betweenness') for net in G.keys()}
 # check
 {net: nx.get_edge_attributes(G[net],'betweenness') for net in G.keys()}
+
+# Reverse weights and store as attributes reverse_weight:
+for net in G:
+    G_net = G[net]
+    reverse_weights = {(u, v): 1 / w for u, v, w in G_net.edges.data('weight') if w != 0}
+    nx.set_edge_attributes(G_net, reverse_weights, 'rev_weight')
+
+# 2.2 Nodes
+
+# Each node has a group attribute -- edit to meaningful group names!!!
+group_labels = {1:'group1',2:'group2',3:'group3',4:'group4',5:'group5'}
+
+{net: nx.set_node_attributes(G[net], {node: group_labels[int(str(node)[0])] for node in G[net].nodes()}, 'group') for net in G.keys()}
+
+G['greens'].nodes(data=True) # check the nodes attributes
+
+{net: nx.set_node_attributes(G[net], nx.betweenness_centrality(G[net], weight = 'rev_weight', k = nx.number_of_nodes(G[net])), 'betweenness') for net in G.keys()}
+{net: nx.set_node_attributes(G[net], G[net].degree(weight='weight'), 'strength') for net in G.keys()}
+{net: nx.set_node_attributes(G[net], nx.eigenvector_centrality(G[net], weight='weight'), 'eigen') for net in G.keys()}
+{net: nx.set_node_attributes(G[net], nx.closeness_centrality(G[net], distance='rev_weight'), 'closeness') for net in G.keys()} # Unweighted since weights represent the capacity of the edge, not distance
+
+
 
 # 3. Metrics ================================================================================
     
