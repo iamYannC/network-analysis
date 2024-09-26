@@ -29,7 +29,7 @@ main <- function(my_name){
       xpnd_x = list(c(0.2, 0), c(0.2, 0), c(0.2, 0), c(0.2, 0)) |> set_names(names(xl)),
       xpnd_y = list(c(0.2, 0), c(0.1, 0), c(0.1, 0), c(0.1, 0)) |> set_names(names(xl))
     )
-
+  
   ##
   print(
     ggnetwork(py_df_mod,my_net,
@@ -41,8 +41,8 @@ main <- function(my_name){
               node_size_coef = viz_opt$node_size_coef[viz_opt$network==my_name],
               xpnd_x = unlist(viz_opt$xpnd_x[viz_opt$network==my_name]),
               xpnd_y = unlist(viz_opt$xpnd_y[viz_opt$network==my_name])
-              )
     )
+  )
   # Save as png & svg
   ggsave(glue::glue("output files/net_{my_name}3.png"),
          width = 12, height = 10,dpi = 300)
@@ -65,3 +65,10 @@ map(names(xl),main)
 #   df_py$v |> filter(network==my_name) |> pull(node_eigen)
 # )
 ###
+
+### Use tkplot to select a custom layout
+  ## Workflow to use tkplot:
+  # dev.off()
+  # Assign a variable to tkplot, x <- tkplot(inet)
+  # change the layout, and dont close the window
+  # while the window is open, assign the layout to the inet object, tk_coords(x)
