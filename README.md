@@ -1,6 +1,6 @@
 # Network analysis from research data
 Yann Cohen
-2024-09-25
+2024-10-02
 
 - [Introduction](#introduction)
 - [Repository Contents](#repository-contents)
@@ -21,7 +21,7 @@ Yann Cohen
 # Introduction
 
 This folder contains the analysis and visualization of a research
-conducted by *Yossy Machluf*[^1] *Ronit Rozenszajn*[^2]. The data was
+conducted by *Yossy Machluf*[^1] & *Ronit Rozenszajn*[^2]. The data was
 processed and analyzed by *Yann Cohen*[^3] using
 [*networkx*](https://proceedings.scipy.org/articles/TCWV9851)[^4] in
 Python and [*igraph*](https://igraph.org)[^5] in R.
