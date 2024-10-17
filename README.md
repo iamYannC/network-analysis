@@ -1,6 +1,6 @@
 # Network analysis from research data
 Yann Cohen
-2024-10-02
+2024-10-17
 
 - [Introduction](#introduction)
 - [Repository Contents](#repository-contents)
@@ -23,33 +23,33 @@ Yann Cohen
 This folder contains the analysis and visualization of a research
 conducted by *Yossy Machluf*[^1] & *Ronit Rozenszajn*[^2]. The data was
 processed and analyzed by *Yann Cohen*[^3] using
-[*networkx*](https://proceedings.scipy.org/articles/TCWV9851)[^4] in
-Python and [*igraph*](https://igraph.org)[^5] in R.
+[*networkx*](https://networkx.org/)[^4] in Python and
+[*igraph*](https://igraph.org)[^5] in R.
 
 # Repository Contents
 
 - [Input files](input%20files/)
-  - [main Excel](input%20files/matrixcorrect.xlsx)
+  - [Main Excel](input%20files/matrixcorrect.xlsx)
   - [All students](input%20files/all.csv)
   - [Green group](input%20files/greens.csv)
   - [Pink group](input%20files/pinks.csv)
   - [Mixed group](input%20files/hetero.csv)
 - Analysis and Vizualization
   - [Analysis in Python](Network%20analysis.py)
-  - [Vizualization in R](main%20generator.R)
+  - [Vizualization in R](main%20generator.R) (helper:
+    [functions.R](functions.R))
 - [Output files](output%20files/)
-  - [All students](output%20files/net_all.png) [*(2nd
-    version)*](output%20files/net_all2.png)
-  - [Green group](output%20files/net_greens.png) [*(2nd
-    version)*](output%20files/net_greens2.png)
-  - [Pink group](output%20files/net_pinks.png) [*(2nd
+  - [All students](output%20files/all_svg.svg)
+  - [Green group](output%20files/greens_svg.svg) [*(2nd
+    version)*](output%20files/net_greens.png)
+  - [Pink group](output%20files/pinks_svg.svg) [*(2nd
     version)*](output%20files/net_pinks2.png)
-  - [Mixed group](output%20files/net_hetero.png) [*(2nd
+  - [Mixed group](output%20files/hetero_svg.svg) [*(2nd
     version)*](output%20files/net_hetero2.png)
   - [Network data](output%20files/Network_df.csv)
   - [Edges data](output%20files/Edges_df.csv)
   - [Nodes data](output%20files/Nodes_df.csv)
-  - [Networks full](networks_full.rds)
+  - [Binary R file for networks](networks_full.rds)
 - [Statistical terms](statistical%20terms.md) (*Also shown below*)
 
 # Network Plots
