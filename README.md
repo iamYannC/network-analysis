@@ -54,9 +54,9 @@ processed and analyzed by *Yann Cohen*[^3] using
 
 # Network Plots
 
-The output folder currently contains various iterations of plotting.
-Once finalized, Only one version for each network (4 in total) will
-remain.
+The output folder currently contains plots with random titles, without
+group names. This will eventually change. There are 4 networks, each has
+one or two plots.
 
 Here is an example of the ‘pink’ group network:
 ![](output%20files/pinks_svg.svg)
