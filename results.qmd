@@ -1,0 +1,362 @@
+---
+title: "Results & Disussion"
+author: "Yann Cohen"
+date: "last-modified"
+format: gfm
+execute:
+  echo: false
+  warning: false
+  message: false
+toc: true
+toc-depth: 1
+---
+
+```{r setup}
+library(tidyverse)
+ggplot2::theme_set(theme_classic(base_size = 15))
+networks <- readr::read_rds("output files/networks_full.rds")
+mo <- function(x){
+    table(x) |>
+    sort(decreasing = T) %>%
+    .[1] |>
+    names() |> 
+    as.numeric()
+  }
+
+```
+
+In this file I will discuss interesting results from the different networks.
+
+# Pink network
+`r i = 'pinks'`
+`r color = '#dd89dd'`
+This network has a total of `r networks[[i]]$py_net$net_N_size` observations. It's subject is **`r networks$pinks$py_net$net_name`**. It has `r networks[[i]]$py_net$net_n_nodes` nodes and `r networks[[i]]$py_net$net_n_edges` edges. It is `r ifelse(!networks[[i]]$py_net$net_is_connected,'not','')` connected, meaning that from each node you can reach any other node. The longest distance between two nodes is `r networks[[i]]$py_net$net_diameter` (network's diameter) and the weighted sum of all edges is `r networks[[i]]$py_net$net_sum_weights`.
+
+## Nodes
+### Degree distribution
+While most nodes have a degree of `r mo(networks[[i]]$py_node$node_strength)` (meaning `r mo(networks[[i]]$py_node$node_strength)` edges, or less if weighted are connected to a node), some have larger degrees, as shown in the histogram below.
+
+
+```{r pink-degree-dist}
+networks[[i]]$py_node |> 
+  ggplot(aes(x = as.factor(node_strength))) + geom_bar(color = "grey",fill = color) +
+  labs(
+    title = paste(" Degree distribution of network:\n",networks[[i]]$py_net$net_name),
+    x = "Node strength", y = "Frequency"
+  ) +
+  geom_label(aes(label = ifelse(
+    node_strength > quantile(networks[[i]]$py_node$node_strength,0.7), node, NA
+  )), y = 1)
+```
+We can see that node **`r networks[[i]]$py_node$node[which.max(networks[[i]]$py_node$node_strength)]`** has the highest degree of `r max(networks[[i]]$py_node$node_strength)`.
+
+### Betweenness and Eigen centralities
+
+
+```{r pink-betweenness-dist}
+networks[[i]]$py_node |> 
+  mutate(node_gg = ifelse(node_betweenness > quantile(node_betweenness,0.7),as.character(node), "Other nodes\n (avg)")
+         ) |> 
+  reframe(node_betweenness = round(mean(node_betweenness),2),
+          .by = node_gg) |> 
+  ggplot(aes(x = fct_reorder(as.factor(node_gg), -node_betweenness), y = node_betweenness)) + 
+  geom_col(color = "grey",fill = color) +
+  labs(
+    title = paste(" Betweeness distribution of network:\n",networks[[i]]$py_net$net_name),
+    x = "Node", y = "Betwenness Centrality"
+  ) 
+
+```
+
+
+The node with the highest betweenness centrality is **`r networks[[i]]$py_node$node[which.max(networks[[i]]$py_node$node_betweenness)]`** with a value of `r round(max(networks[[i]]$py_node$node_betweenness),2)`.
+
+```{r pink-eigen-dist}
+networks[[i]]$py_node |> 
+  mutate(node_gg = ifelse(node_eigen > quantile(node_eigen,0.7),as.character(node), "Other nodes\n (avg)")
+         ) |> 
+  reframe(node_eigen = round(mean(node_eigen),2),
+          .by = node_gg) |> 
+  ggplot(aes(x = fct_reorder(as.factor(node_gg), -node_eigen), y = node_eigen)) + 
+  geom_col(color = "grey",fill = color) +
+  labs(
+    title = paste(" Eigenvector distribution of network:\n",networks[[i]]$py_net$net_name),
+    x = "Node", y = "Eigenvector Centrality"
+  ) 
+
+```
+
+The node with the highest eigen centrality is **`r networks[[i]]$py_node$node[which.max(networks[[i]]$py_node$node_eigen)]`** with a value of `r round(max(networks[[i]]$py_node$node_eigen),2)`.
+
+Node 111 is clearly the most important node in the network.
+
+## Edges
+
+### Weights distribution
+
+`r table(networks[[i]]$py_edge$edge_weight)[1]` edges have a weight of `r mo(networks[[i]]$py_edge$edge_weight)`. A few have larger weights, as shown in the table below.
+
+```{r pink-weight-dist}
+networks[[i]]$py_edge |> count(`Edge Weight` = edge_weight,name = "N") |>  
+  knitr::kable(caption = paste("Weights distribution in network:",networks[[i]]$py_net$net_name))
+```
+
+# All network
+
+`r i = 'all'`
+`r color = '#dddaef'`
+
+This network has a total of `r networks[[i]]$py_net$net_N_size` observations. It's subject is **`r networks$pinks$py_net$net_name`**. It has `r networks[[i]]$py_net$net_n_nodes` nodes and `r networks[[i]]$py_net$net_n_edges` edges. It is `r ifelse(!networks[[i]]$py_net$net_is_connected,'not','')` connected, meaning that from each node you can `r ifelse(!networks[[i]]$py_net$net_is_connected,'not','')` reach any other node. The longest distance between two nodes is `r max(networks[[i]]$py_edge$distance,na.rm=T)` and the weighted sum of all edges is `r networks[[i]]$py_net$net_sum_weights`.
+
+## Nodes
+### Degree distribution
+
+While most nodes have a degree of `r mo(networks[[i]]$py_node$node_strength)` (meaning `r mo(networks[[i]]$py_node$node_strength)` edge is connected to a node), some have larger degrees, as shown in the histogram below.
+
+
+```{r all-degree-dist}
+networks[[i]]$py_node |> 
+  ggplot(aes(x = as.factor(node_strength))) + geom_bar(color = '#a2a0af', fill = color) +
+  labs(
+    title = paste(" Degree distribution of network:\n",networks[[i]]$py_net$net_name),
+    x = "Node strength", y = "Frequency"
+  ) +
+  geom_label(aes(label = ifelse(
+    node_strength > quantile(networks[[i]]$py_node$node_strength,0.8), node, NA
+  )), y = 1)
+```
+We can see that node **`r networks[[i]]$py_node$node[which.max(networks[[i]]$py_node$node_strength)]`** has the highest degree of `r max(networks[[i]]$py_node$node_strength)`.
+
+### Betweenness and Eigen centralities
+
+
+```{r all-betweenness-dist}
+networks[[i]]$py_node |> 
+  mutate(node_gg = ifelse(node_betweenness > quantile(node_betweenness,0.8),as.character(node), "Other nodes\n (avg)")
+         ) |> 
+  reframe(node_betweenness = round(mean(node_betweenness),2),
+          .by = node_gg) |> 
+  ggplot(aes(x = fct_reorder(as.factor(node_gg), -node_betweenness), y = node_betweenness)) + 
+  geom_col(color = "#a2a0af",fill = color) +
+  labs(
+    title = paste(" Betweeness distribution of network:\n",networks[[i]]$py_net$net_name),
+    x = "Node", y = "Betwenness Centrality"
+  ) 
+
+```
+
+
+The node with the highest betweenness centrality is **`r networks[[i]]$py_node$node[which.max(networks[[i]]$py_node$node_betweenness)]`** with a value of `r round(max(networks[[i]]$py_node$node_betweenness),2)`.
+
+```{r all-eigen-dist}
+networks[[i]]$py_node |> 
+  mutate(node_gg = ifelse(node_eigen > quantile(node_eigen,0.7),as.character(node), "Other nodes\n (avg)")
+         ) |> 
+  reframe(node_eigen = round(mean(node_eigen),2),
+          .by = node_gg) |> 
+  ggplot(aes(x = fct_reorder(as.factor(node_gg), -node_eigen), y = node_eigen)) + 
+  geom_col(color = "#a2a0af",fill = color) +
+  labs(
+    title = paste(" Eigenvector distribution of network:\n",networks[[i]]$py_net$net_name),
+    x = "Node", y = "Eigenvector Centrality"
+  ) 
+
+```
+
+The node with the highest eigen centrality is **`r networks[[i]]$py_node$node[which.max(networks[[i]]$py_node$node_eigen)]`** with a value of `r round(max(networks[[i]]$py_node$node_eigen),2)`.
+
+`r n_of_interest = 510`
+
+It is interesting that while node **`r n_of_interest`** doesn't have lots of connections (with a degree of `r networks[[i]]$py_node$node_strength[networks[[i]]$py_node$node == n_of_interest]`), it has a high betweenness centrality of `r networks[[i]]$py_node$node_betweenness[networks[[i]]$py_node$node == n_of_interest]`. This means that it is a bridge between different parts of the network.
+
+## Edges
+
+### Weights distribution
+
+`r table(networks[[i]]$py_edge$edge_weight)[1]` edges have a weight of `r mo(networks[[i]]$py_edge$edge_weight)`. A few have larger weights, as shown in the table below.
+
+```{r all-weight-dist}
+networks[[i]]$py_edge |> count(`Edge Weight` = edge_weight,name = "N") |>  
+  knitr::kable(caption = paste("Weights distribution in network:",networks[[i]]$py_net$net_name))
+```
+
+# Green network
+
+`r i = 'greens'`
+`r color = '#99dba0'`
+
+This network has a total of `r networks[[i]]$py_net$net_N_size` observations. It's subject is **`r networks$pinks$py_net$net_name`**. It has `r networks[[i]]$py_net$net_n_nodes` nodes and `r networks[[i]]$py_net$net_n_edges` edges. It is `r ifelse(!networks[[i]]$py_net$net_is_connected,'not','')` connected, meaning that from each node you can `r ifelse(!networks[[i]]$py_net$net_is_connected,'not','')` reach any other node. The longest distance between two nodes is `r max(networks[[i]]$py_edge$distance,na.rm=T)` and the weighted sum of all edges is `r networks[[i]]$py_net$net_sum_weights`.
+
+## Nodes
+### Degree distribution
+
+While most nodes have a degree of `r mo(networks[[i]]$py_node$node_strength)` (meaning `r mo(networks[[i]]$py_node$node_strength)` edge is connected to a node), some have larger degrees, as shown in the histogram below.
+
+
+```{r green-degree-dist}
+networks[[i]]$py_node |> 
+  ggplot(aes(x = as.factor(node_strength))) + geom_bar(color = "grey",fill = color) +
+  labs(
+    title = paste(" Degree distribution of network:\n",networks[[i]]$py_net$net_name),
+    x = "Node strength", y = "Frequency"
+  ) +
+  geom_label(aes(label = ifelse(
+    node_strength > quantile(networks[[i]]$py_node$node_strength,0.8), node, NA
+  )), y = 1)
+```
+We can see that node **`r networks[[i]]$py_node$node[which.max(networks[[i]]$py_node$node_strength)]`** has the highest degree of `r max(networks[[i]]$py_node$node_strength)`.
+
+### Betweenness and Eigen centralities
+
+
+```{r green-betweenness-dist}
+networks[[i]]$py_node |> 
+  mutate(node_gg = ifelse(node_betweenness > quantile(node_betweenness,0.8),as.character(node), "Other nodes\n (avg)")
+         ) |> 
+  reframe(node_betweenness = round(mean(node_betweenness),2),
+          .by = node_gg) |> 
+  ggplot(aes(x = fct_reorder(as.factor(node_gg), -node_betweenness), y = node_betweenness)) + 
+  geom_col(color = "grey",fill = color) +
+  labs(
+    title = paste(" Betweeness distribution of network:\n",networks[[i]]$py_net$net_name),
+    x = "Node", y = "Betwenness Centrality"
+  ) 
+
+```
+
+
+The node with the highest betweenness centrality is **`r networks[[i]]$py_node$node[which.max(networks[[i]]$py_node$node_betweenness)]`** with a value of `r round(max(networks[[i]]$py_node$node_betweenness),2)`.
+
+```{r green-eigen-dist}
+networks[[i]]$py_node |> 
+  mutate(node_gg = ifelse(node_eigen > quantile(node_eigen,0.7),as.character(node), "Other nodes\n (avg)")
+         ) |> 
+  reframe(node_eigen = round(mean(node_eigen),2),
+          .by = node_gg) |> 
+  ggplot(aes(x = fct_reorder(as.factor(node_gg), -node_eigen), y = node_eigen)) + 
+  geom_col(color = "grey",fill = color) +
+  labs(
+    title = paste(" Eigenvector distribution of network:\n",networks[[i]]$py_net$net_name),
+    x = "Node", y = "Eigenvector Centrality"
+  ) 
+
+```
+
+The node with the highest eigen centrality is **`r networks[[i]]$py_node$node[which.max(networks[[i]]$py_node$node_eigen)]`** with a value of `r round(max(networks[[i]]$py_node$node_eigen),2)`.
+
+`r n_of_interest = 112`
+It is interesting that while node **`r n_of_interest`** doesn't have lots of connections (with a degree of `r networks[[i]]$py_node$node_strength[networks[[i]]$py_node$node == n_of_interest]`), it has a high betweenness centrality of `r networks[[i]]$py_node$node_betweenness[networks[[i]]$py_node$node == n_of_interest]`. This means that it is a bridge between different parts of the network.
+
+## Edges
+
+### Weights distribution
+
+`r table(networks[[i]]$py_edge$edge_weight)[1]` edges have a weight of `r mo(networks[[i]]$py_edge$edge_weight)`. A few have larger weights, as shown in the table below.
+
+```{r green-weight-dist}
+networks[[i]]$py_edge |> count(`Edge Weight` = edge_weight,name = "N") |>  
+  knitr::kable(caption = paste("Weights distribution in network:",networks[[i]]$py_net$net_name))
+```
+
+# Hetero network
+
+`r i = 'hetero'`
+`r color = '#d3e7ea'`
+
+This network has a total of `r networks[[i]]$py_net$net_N_size` observations. It's subject is **`r networks$pinks$py_net$net_name`**. It has `r networks[[i]]$py_net$net_n_nodes` nodes and `r networks[[i]]$py_net$net_n_edges` edges. It is `r ifelse(!networks[[i]]$py_net$net_is_connected,'not','')` connected, meaning that from each node you can `r ifelse(!networks[[i]]$py_net$net_is_connected,'not','')` reach any other node. The longest distance between two nodes is `r max(networks[[i]]$py_edge$distance,na.rm=T)` and the weighted sum of all edges is `r networks[[i]]$py_net$net_sum_weights`.
+
+## Nodes
+### Degree distribution
+
+While most nodes have a degree of `r mo(networks[[i]]$py_node$node_strength)` (meaning `r mo(networks[[i]]$py_node$node_strength)` edge is connected to a node), some have larger degrees, as shown in the histogram below.
+
+
+```{r hetero-degree-dist}
+networks[[i]]$py_node |> 
+  ggplot(aes(x = as.factor(node_strength))) + geom_bar(color = "grey",fill = color) +
+  labs(
+    title = paste(" Degree distribution of network:\n",networks[[i]]$py_net$net_name),
+    x = "Node strength", y = "Frequency"
+  ) +
+  geom_label(aes(label = ifelse(
+    node_strength > quantile(networks[[i]]$py_node$node_strength,0.8), node, NA
+  )), y = 1)
+```
+We can see that node **`r networks[[i]]$py_node$node[which.max(networks[[i]]$py_node$node_strength)]`** has the highest degree of `r max(networks[[i]]$py_node$node_strength)`.
+
+### Betweenness and Eigen centralities
+
+
+```{r hetero-betweenness-dist}
+networks[[i]]$py_node |> 
+  mutate(node_gg = ifelse(node_betweenness > quantile(node_betweenness,0.8),as.character(node), "Other nodes\n (avg)")
+         ) |> 
+  reframe(node_betweenness = round(mean(node_betweenness),2),
+          .by = node_gg) |> 
+  ggplot(aes(x = fct_reorder(as.factor(node_gg), -node_betweenness), y = node_betweenness)) + 
+  geom_col(color = "grey",fill = color) +
+  labs(
+    title = paste(" Betweeness distribution of network:\n",networks[[i]]$py_net$net_name),
+    x = "Node", y = "Betwenness Centrality"
+  ) 
+
+```
+
+
+The node with the highest betweenness centrality is **`r networks[[i]]$py_node$node[which.max(networks[[i]]$py_node$node_betweenness)]`** with a value of `r round(max(networks[[i]]$py_node$node_betweenness),2)`.
+
+```{r hetero-eigen-dist}
+networks[[i]]$py_node |> 
+  mutate(node_gg = ifelse(node_eigen > quantile(node_eigen,0.7),as.character(node), "Other nodes\n (avg)")
+         ) |> 
+  reframe(node_eigen = round(mean(node_eigen),2),
+          .by = node_gg) |> 
+  ggplot(aes(x = fct_reorder(as.factor(node_gg), -node_eigen), y = node_eigen)) + 
+  geom_col(color = "grey",fill = color) +
+  labs(
+    title = paste(" Eigenvector distribution of network:\n",networks[[i]]$py_net$net_name),
+    x = "Node", y = "Eigenvector Centrality"
+  ) 
+
+```
+
+The node with the highest eigen centrality is **`r networks[[i]]$py_node$node[which.max(networks[[i]]$py_node$node_eigen)]`** with a value of `r round(max(networks[[i]]$py_node$node_eigen),2)`.
+
+Node 111 is clearly the most important node in the network.
+
+## Edges
+
+### Weights distribution
+
+`r table(networks[[i]]$py_edge$edge_weight)[1]` edges have a weight of `r mo(networks[[i]]$py_edge$edge_weight)`. A few have larger weights, as shown in the table below.
+
+```{r hetero-weight-dist}
+networks[[i]]$py_edge |> count(`Edge Weight` = edge_weight,name = "N") |>  
+  knitr::kable(caption = paste("Weights distribution in network:",networks[[i]]$py_net$net_name))
+```
+
+# Across networks
+
+The path between node **111** and **318** appears in all 4 networks. It is the only path that exists in all four of them.
+
+
+```{mermaid graph}
+graph LR
+    111 --- 318
+    classDef round fill:#f9f,stroke:#8c748c,stroke-width:2px,rx:10,ry:10;
+    class 111,318 round;
+```
+
+```{r across_net}
+edge_w <- c()
+for(net in names(networks)){
+  edge_w[net] <- networks[[net]]$py_edge |> filter(path_in_N_networks == 4)%>%.[['edge_weight']]
+}
+
+tibble(network = names(networks),
+       path = "111 <-> 318",
+       edge_weight = edge_w) |> knitr::kable(caption = "*Edge weights for path 111 <-> 318 in all networks*")
+
+
+```
+
