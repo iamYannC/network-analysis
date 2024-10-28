@@ -22,8 +22,8 @@ main <- function(my_name){
       network = names(xl),
       lgnd_dir = c('horizontal', 'vertical', 'horizontal', 'vertical'),
       lgnd_pos = list( c(0.54, 1), c(0.1, 0.90), c(0.7, 0.08),c(0.14, 0.85) ) |> set_names(names(xl)),
-      s = c(6,4,4,2),
-      w = c(2,rep(5,3)),
+      s = c(6,4,4,2), # min number of nodes
+      w = c(2,rep(5,3)), # min weight of edge
       label_size_coef = rep(0.35,4),
       node_size_coef = rep(1.1,4),
       xpnd_x = list(c(0.2, 0), c(0.2, 0), c(0.2, 0), c(0.2, 0)) |> set_names(names(xl)),
@@ -68,7 +68,9 @@ map(names(xl),main)
 
 ### Use tkplot to select a custom layout
   ## Workflow to use tkplot:
+  # run all internal functions including layout and viz opt
   # dev.off()
-  # Assign a variable to tkplot, x <- tkplot(inet)
+  # Assign a variable to tkplot, x <- tkplot(inet), where inet is an igraph object
   # change the layout, and dont close the window
-  # while the window is open, assign the layout to the inet object, tk_coords(x)
+  # while the window is open, assign the coords to layout, layout <-  tk_coords(x)
+  # close the windows and re-run py_df_mod so it reruns with the new layout

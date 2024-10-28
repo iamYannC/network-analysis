@@ -197,11 +197,11 @@ ggnetwork <- function(python_df_list_modified,network_name,
   
   #' This function creates a network plot.
   #' 
-  #' @param python_df_list_modified a list of data frames, output of modify_py.
+  #' @param python_df_list_modified a list of data frames, output of `modify_py`.
   #' @param network_name a string, the name of the network.
-  #' @param w a numeric, the edge weight threshold.
-  #' @param s a numeric, the node strength threshold.
-  #' @param lgnd_pos a numeric vector, the position of the legend.
+  #' @param w a numeric, the edge weight threshold. Controls the opacity of the edges.
+  #' @param s a numeric, the node strength threshold. Controls weather there is a label or not.
+  #' @param lgnd_pos a numeric vector of length 2, the position of the legend.
   #' @param lgnd_dir a string, the direction of the legend. either 'vertical' or 'horizontal'.
   #' @param label_size_coef a numeric, the label size coefficient.
   #' @param node_size_coef a numeric, the node size coefficient.
@@ -238,7 +238,7 @@ ggnetwork <- function(python_df_list_modified,network_name,
     Network of {python_df_list_modified[['n']]$net_name}
     "
     ),
-         shape="",x="",y=""
+         shape=NULL,x=NULL,y=NULL
     )+
     
     scale_size_identity() +
