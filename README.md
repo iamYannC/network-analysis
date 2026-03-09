@@ -163,7 +163,8 @@ Social networks, 29(4), 555-564.
     [ResearchGate](https://www.researchgate.net/profile/Ronit-Rozenszajn)
 
 [^3]: **Yann Cohen:**
-    [Linkedin](https://www.linkedin.com/in/yann-cohen-tourman/)
+    [ORCID](https://orcid.org/0009-0009-0509-3609),
+    [Yann-dev.io](https://iamyannc.github.io/Yann-dev)
 
 [^4]: Hagberg, A. A., Schult, D. A., & Swart, P. J. (2008). Exploring
     network structure, dynamics, and function using NetworkX. In G.
